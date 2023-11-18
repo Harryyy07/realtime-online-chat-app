@@ -1,26 +1,35 @@
-const express = require('express')
-const app = express()
-const http = require('http').createServer(app)
+const express = require('express');
+const app = express();
+const http = require('http');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
 
-const PORT = process.env.PORT || 3000
+app.use(cors());
 
-http.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`)
-})
+const server = http.createServer(app);
 
-app.use(express.static(__dirname + '/public'))
+const PORT = 5000;
+
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html')
-})
+    console.log('Serving index.html');
+    res.sendFile(path.join(__dirname, '/index.html'));
+});
 
-// Socket 
-const io = require('socket.io')(http)
+// Socket
+const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
-    console.log('Connected...')
-    socket.on('message', (msg) => {
-        socket.broadcast.emit('message', msg)
-    })
+    console.log('Socket connected:', socket.id);
 
-})
+    socket.on('message', (msg) => {
+        console.log('Received message:', msg);
+        socket.broadcast.emit('message', msg);
+    });
+});

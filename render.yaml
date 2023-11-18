@@ -1,0 +1,10 @@
+services:
+  - name: realtime-chat-app
+    envVars: .env
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: / # Optional health check path
+
+env:
+  - key: NODE_ENV
+    value: production
